@@ -369,7 +369,7 @@
 <span class="kn">import</span> <span class="nn">respx</span>
 
 
-<span class="nd">@respx.mock</span>
+<span class="nd">@respx</span><span class="o">.</span><span class="n">mock</span>
 <span class="k">def</span> <span class="nf">test_something</span><span class="p">():</span>
     <span class="n">request</span> <span class="o">=</span> <span class="n">respx</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/baz/&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">201</span><span class="p">)</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/baz/&quot;</span><span class="p">)</span>
