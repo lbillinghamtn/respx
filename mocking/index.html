@@ -269,15 +269,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#async-support" class="md-nav__link">
-    Async Support
+  <a href="#advanced-usage" class="md-nav__link">
+    Advanced Usage
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#advanced-usage" class="md-nav__link">
-    Advanced Usage
+  <a href="#sync-support" class="md-nav__link">
+    Sync Support
   </a>
   
 </li>
@@ -340,15 +340,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#async-support" class="md-nav__link">
-    Async Support
+  <a href="#advanced-usage" class="md-nav__link">
+    Advanced Usage
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#advanced-usage" class="md-nav__link">
-    Advanced Usage
+  <a href="#sync-support" class="md-nav__link">
+    Sync Support
   </a>
   
 </li>
@@ -378,9 +378,9 @@
 
 
 <span class="nd">@respx</span><span class="o">.</span><span class="n">mock</span>
-<span class="k">def</span> <span class="nf">test_something</span><span class="p">():</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_something</span><span class="p">():</span>
     <span class="n">request</span> <span class="o">=</span> <span class="n">respx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="s2">&quot;foobar&quot;</span><span class="p">)</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/&quot;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">httpx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">request</span><span class="o">.</span><span class="n">called</span>
     <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
     <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;foobar&quot;</span>
@@ -392,29 +392,12 @@
 <span class="kn">import</span> <span class="nn">respx</span>
 
 
-<span class="k">with</span> <span class="n">respx</span><span class="o">.</span><span class="n">mock</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">with</span> <span class="n">respx</span><span class="o">.</span><span class="n">mock</span><span class="p">:</span>
     <span class="n">request</span> <span class="o">=</span> <span class="n">respx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="s2">&quot;foobar&quot;</span><span class="p">)</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/&quot;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">httpx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">request</span><span class="o">.</span><span class="n">called</span>
     <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
     <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;foobar&quot;</span>
-</pre></div>
-
-
-<h2 id="async-support">Async Support</h2>
-<p>Both decorator and context manager supports async contexts and the <code>HTTPX</code> async client.</p>
-<div class="codehilite"><pre><span></span><span class="nd">@respx</span><span class="o">.</span><span class="n">mock</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_something</span><span class="p">():</span>
-    <span class="o">...</span>
-    <span class="k">async</span> <span class="k">with</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-</pre></div>
-
-
-<div class="codehilite"><pre><span></span><span class="k">async</span> <span class="k">with</span> <span class="n">respx</span><span class="o">.</span><span class="n">mock</span><span class="p">:</span>
-    <span class="o">...</span>
-    <span class="k">async</span> <span class="k">with</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 </pre></div>
 
 
@@ -425,6 +408,9 @@ For more details on checks, see RESPX <a href="../api/#built-in-assertions">Buil
 <p class="admonition-title">NOTE</p>
 <p>You can also start and stop mocking <code>HTTPX</code> manually, by calling <code>respx.start()</code> and <code>respx.stop()</code>.</p>
 </div>
+<h2 id="sync-support">Sync Support</h2>
+<p><code>HTTPX</code> is, <em>since version <code>0.8</code></em>, an <strong>async</strong> only HTTP client.
+You can still use the <code>respx.mock</code> decorator on regular <strong>sync</strong> functions to mock out <code>HTTPX</code> and responses.</p>
                 
                   
                 

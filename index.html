@@ -370,9 +370,9 @@
 
 
 <span class="nd">@respx</span><span class="o">.</span><span class="n">mock</span>
-<span class="k">def</span> <span class="nf">test_something</span><span class="p">():</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_something</span><span class="p">():</span>
     <span class="n">request</span> <span class="o">=</span> <span class="n">respx</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/baz/&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">201</span><span class="p">)</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/baz/&quot;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">httpx</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/baz/&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">request</span><span class="o">.</span><span class="n">called</span>
     <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
 </pre></div>
@@ -386,7 +386,7 @@
 </pre></div>
 
 
-<p>See <code>HTTPX</code>'s documentation on <a href="https://www.encode.io/httpx/#installation">Installation</a> for requirements.</p>
+<p>Requires Python 3.6+ and HTTPX 0.8+</p>
                 
                   
                 
