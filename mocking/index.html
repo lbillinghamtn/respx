@@ -255,15 +255,22 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#mock-decorator" class="md-nav__link">
-    Mock Decorator
+  <a href="#using-the-decorator" class="md-nav__link">
+    Using the Decorator
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#mock-context-manager" class="md-nav__link">
-    Mock Context Manager
+  <a href="#using-the-context-manager" class="md-nav__link">
+    Using the Context Manager
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#async-support" class="md-nav__link">
+    Async Support
   </a>
   
 </li>
@@ -319,15 +326,22 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#mock-decorator" class="md-nav__link">
-    Mock Decorator
+  <a href="#using-the-decorator" class="md-nav__link">
+    Using the Decorator
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#mock-context-manager" class="md-nav__link">
-    Mock Context Manager
+  <a href="#using-the-context-manager" class="md-nav__link">
+    Using the Context Manager
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#async-support" class="md-nav__link">
+    Async Support
   </a>
   
 </li>
@@ -358,7 +372,7 @@
                 
                 <h1 id="mocking-httpx">Mocking HTTPX</h1>
 <p>To mock out <code>HTTPX</code>, use the <code>respx.mock</code> decorator / context manager.</p>
-<h2 id="mock-decorator">Mock Decorator</h2>
+<h2 id="using-the-decorator">Using the Decorator</h2>
 <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">httpx</span>
 <span class="kn">import</span> <span class="nn">respx</span>
 
@@ -373,16 +387,34 @@
 </pre></div>
 
 
-<h2 id="mock-context-manager">Mock Context Manager</h2>
+<h2 id="using-the-context-manager">Using the Context Manager</h2>
 <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">httpx</span>
 <span class="kn">import</span> <span class="nn">respx</span>
 
 
 <span class="k">with</span> <span class="n">respx</span><span class="o">.</span><span class="n">mock</span><span class="p">:</span>
-    <span class="n">request</span> <span class="o">=</span> <span class="n">respx</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/baz/&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;some&quot;</span><span class="p">:</span> <span class="s2">&quot;thing&quot;</span><span class="p">})</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/baz/&quot;</span><span class="p">)</span>
+    <span class="n">request</span> <span class="o">=</span> <span class="n">respx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="s2">&quot;foobar&quot;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">request</span><span class="o">.</span><span class="n">called</span>
-    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;some&quot;</span><span class="p">:</span> <span class="s2">&quot;thing&quot;</span><span class="p">}</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;foobar&quot;</span>
+</pre></div>
+
+
+<h2 id="async-support">Async Support</h2>
+<p>Both decorator and context manager supports async contexts and the <code>HTTPX</code> async client.</p>
+<div class="codehilite"><pre><span></span><span class="nd">@respx</span><span class="o">.</span><span class="n">mock</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_something</span><span class="p">():</span>
+    <span class="o">...</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="k">async</span> <span class="k">with</span> <span class="n">respx</span><span class="o">.</span><span class="n">mock</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 </pre></div>
 
 

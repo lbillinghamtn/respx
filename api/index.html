@@ -598,19 +598,18 @@ See <a href="#request-api">Request API</a> for parameters.</p>
 <p>Named groups in the regex pattern will be passed as <code>kwargs</code> to the response content <a href="#content-callback">callback</a>, if used.</p>
 </div>
 <h3 id="request-callback">Request callback</h3>
-<p>For full control of what request to <strong>match</strong> and what response to <strong>mock</strong>, pass a callback function as the request <code>method</code> parameter.</p>
+<p>For full control of what request to <strong>match</strong> and what response to <strong>mock</strong>,
+pass a <em>callback</em> function as the <code>request(method, ...)</code> parameter.
+The callback's response argument will be pre-populated with any additional response parameters.</p>
 <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">httpx</span>
 <span class="kn">import</span> <span class="nn">respx</span>
 
 
-<span class="k">def</span> <span class="nf">custom_matcher</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">match_and_mock</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Response argument is pre-populated with any given</span>
-<span class="sd">    response parameters from the respx.request(...) call.</span>
-
 <span class="sd">    Return `None` to not match the request.</span>
-<span class="sd">    Return the response to match and mock this request.</span>
-<span class="sd">    Return the request for pass-through behaviour.</span>
+<span class="sd">    Return the `response` to match and mock this request.</span>
+<span class="sd">    Return the `request` for pass-through behaviour.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">!=</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
@@ -625,7 +624,7 @@ See <a href="#request-api">Request API</a> for parameters.</p>
 
 <span class="nd">@respx</span><span class="o">.</span><span class="n">mock</span>
 <span class="k">def</span> <span class="nf">test_something</span><span class="p">():</span>
-    <span class="n">custom_request</span> <span class="o">=</span> <span class="n">respx</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">custom_matcher</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">201</span><span class="p">)</span>
+    <span class="n">custom_request</span> <span class="o">=</span> <span class="n">respx</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">match_and_mock</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">201</span><span class="p">)</span>
     <span class="n">respx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/baz/&quot;</span><span class="p">)</span>
 
     <span class="n">response</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/baz/&quot;</span><span class="p">)</span>
@@ -636,7 +635,7 @@ See <a href="#request-api">Request API</a> for parameters.</p>
     <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span>
     <span class="k">assert</span> <span class="n">custom_request</span><span class="o">.</span><span class="n">called</span>
 
-    <span class="n">response</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/baz/&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;X-Auth-Token&quot;</span><span class="p">:</span> <span class="s2">&quot;token&quot;</span><span class="p">})</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/baz/&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;X-Auth-Token&quot;</span><span class="p">:</span> <span class="s2">&quot;x&quot;</span><span class="p">})</span>
     <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
     <span class="k">assert</span> <span class="n">custom_request</span><span class="o">.</span><span class="n">call_count</span> <span class="o">==</span> <span class="mi">2</span>
 </pre></div>
@@ -684,25 +683,23 @@ The <code>Content-Type</code> header will automatically be set to <code>applicat
 
 
 <h3 id="content-callback">Content callback</h3>
-<p>If you need dynamic response content, pass a callback function.</p>
+<p>If you need dynamic response content, pass a <em>callback</em> function.<br />
+When used together with a <a href="#url-pattern">URL pattern</a>, named groups will be passed
+as <code>kwargs</code>.</p>
 <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">httpx</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">respx</span>
 
 
-<span class="k">def</span> <span class="nf">my_content</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">slug</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Named groups in a URL pattern will be passed kwargs.</span>
-
-<span class="sd">    Return bytes, str, list or a dict.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">some_content</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">slug</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Return bytes, str, list or a dict. &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="n">slug</span><span class="p">}</span>
 
 
 <span class="nd">@respx</span><span class="o">.</span><span class="n">mock</span>
 <span class="k">def</span> <span class="nf">test_something</span><span class="p">():</span>
     <span class="n">url_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^https://foo.bar/(?P&lt;slug&gt;\w+)/$&quot;</span><span class="p">)</span>
-    <span class="n">respx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url_pattern</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">my_content</span><span class="p">)</span>
+    <span class="n">respx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url_pattern</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">some_content</span><span class="p">)</span>
 
     <span class="n">response</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/apa/&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="s2">&quot;apa&quot;</span><span class="p">}</span>
@@ -737,7 +734,7 @@ This is useful when you need to test proper <code>HTTPX</code> error handling in
 <p>Configure checks by using the <code>respx.mock</code> decorator / context manager <em>with</em> parentheses.</p>
 <div class="codehilite"><pre><span></span><span class="nd">@respx</span><span class="o">.</span><span class="n">mock</span><span class="p">(</span><span class="n">assert_all_called</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_something</span><span class="p">(</span><span class="n">httpx_mock</span><span class="p">):</span>
-    <span class="n">httpx_mock</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://some.url/&quot;</span><span class="p">)</span>  <span class="c1"># Will not cause assertion fail</span>
+    <span class="n">httpx_mock</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://some.url/&quot;</span><span class="p">)</span>  <span class="c1"># OK</span>
     <span class="n">httpx_mock</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/&quot;</span><span class="p">)</span>
 
     <span class="n">response</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/&quot;</span><span class="p">)</span>
@@ -747,7 +744,7 @@ This is useful when you need to test proper <code>HTTPX</code> error handling in
 
 
 <div class="codehilite"><pre><span></span><span class="k">with</span> <span class="n">respx</span><span class="o">.</span><span class="n">mock</span><span class="p">(</span><span class="n">assert_all_mocked</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">httpx_mock</span><span class="p">:</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/&quot;</span><span class="p">)</span>  <span class="c1"># Will cause assertion fail</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/&quot;</span><span class="p">)</span>  <span class="c1"># OK</span>
     <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
     <span class="k">assert</span> <span class="n">httpx_mock</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">call_count</span> <span class="o">==</span> <span class="mi">1</span>
 </pre></div>
