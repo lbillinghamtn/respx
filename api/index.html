@@ -310,8 +310,22 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#exact-url" class="md-nav__link">
+    Exact URL
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#url-pattern" class="md-nav__link">
     URL pattern
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#base-url" class="md-nav__link">
+    Base URL
   </a>
   
 </li>
@@ -450,8 +464,22 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#exact-url" class="md-nav__link">
+    Exact URL
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#url-pattern" class="md-nav__link">
     URL pattern
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#base-url" class="md-nav__link">
+    Base URL
   </a>
   
 </li>
@@ -585,8 +613,14 @@ See <a href="#request-api">Request API</a> for parameters.</p>
 </blockquote>
 <hr />
 <h2 id="matching-requests">Matching Requests</h2>
+<h3 id="exact-url">Exact URL</h3>
+<p>To match and mock a request by an exact URL, pass the <code>url</code> parameter as a <em>string</em>.</p>
+<div class="codehilite"><pre><span></span><span class="n">respx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">204</span><span class="p">)</span>
+</pre></div>
+
+
 <h3 id="url-pattern">URL pattern</h3>
-<p>Instead of matching an exact URL, you can pass a <em>compiled regex</em> to match the request URL.</p>
+<p>Instead of matching an <a href="#exact-url">exact URL</a>, you can pass a <em>compiled regex</em> to match the request URL.</p>
 <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">httpx</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">respx</span>
@@ -605,6 +639,22 @@ See <a href="#request-api">Request API</a> for parameters.</p>
 <p class="admonition-title">Tip</p>
 <p>Named groups in the regex pattern will be passed as <code>kwargs</code> to the response content <a href="#content-callback">callback</a>, if used.</p>
 </div>
+<h3 id="base-url">Base URL</h3>
+<p>When adding a lot of request patterns sharing the same domain/prefix, you can configure RESPX with a <code>base_url</code> to use as the base when matching URLs.</p>
+<p>Like <code>url</code>, the <code>base_url</code> can also be passed as a <em>compiled regex</em>, with optional named groups.</p>
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">httpx</span>
+<span class="kn">import</span> <span class="nn">respx</span>
+
+
+<span class="nd">@respx</span><span class="o">.</span><span class="n">mock</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://foo.bar&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_something</span><span class="p">():</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://foo.bar&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="n">respx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/baz/&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="s2">&quot;Baz&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/baz/&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;Baz&quot;</span>
+</pre></div>
+
+
 <h3 id="request-callback">Request callback</h3>
 <p>For full control of what request to <strong>match</strong> and what response to <strong>mock</strong>,
 pass a <em>callback</em> function as the <code>request(method, ...)</code> parameter.
