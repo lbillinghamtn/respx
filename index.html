@@ -378,9 +378,9 @@
 
 
 <span class="nd">@respx</span><span class="o">.</span><span class="n">mock</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_something</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">test_something</span><span class="p">():</span>
     <span class="n">request</span> <span class="o">=</span> <span class="n">respx</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/baz/&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">201</span><span class="p">)</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">httpx</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/baz/&quot;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/baz/&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">request</span><span class="o">.</span><span class="n">called</span>
     <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
 </pre></div>
@@ -394,7 +394,7 @@
 </pre></div>
 
 
-<p>Requires Python 3.6+ and HTTPX 0.10.1+.
+<p>Requires Python 3.6+ and HTTPX 0.11.0+.
 See <a href="https://github.com/lundberg/respx/blob/master/CHANGELOG.md">Changelog</a> for older HTTPX compatibility.</p>
                 
                   
