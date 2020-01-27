@@ -505,7 +505,7 @@ with <code>respx.mock(...)</code>.</p>
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
 <span class="k">def</span> <span class="nf">mocked_api</span><span class="p">():</span>
     <span class="k">with</span> <span class="n">respx</span><span class="o">.</span><span class="n">mock</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://foo.bar&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">httpx_mock</span><span class="p">:</span>
-        <span class="n">httpx_mock</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/user/&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="p">[],</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;list_users&quot;</span><span class="p">)</span>
+        <span class="n">httpx_mock</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/users/&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="p">[],</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;list_users&quot;</span><span class="p">)</span>
         <span class="o">...</span>
         <span class="k">yield</span> <span class="n">httpx_mock</span>
 </pre></div>
