@@ -261,8 +261,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#request-api" class="md-nav__link">
-    Request API
+  <a href="#pattern-api" class="md-nav__link">
+    Pattern API
   </a>
   
 </li>
@@ -416,8 +416,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#request-api" class="md-nav__link">
-    Request API
+  <a href="#pattern-api" class="md-nav__link">
+    Pattern API
   </a>
   
 </li>
@@ -555,16 +555,16 @@ See <a href="#request-api">Request API</a> for parameters.</p>
 <p><code>respx.<strong>patch</strong>(...)</strong></code></p>
 <p><code>respx.<strong>delete</strong>(...)</strong></code></p>
 </blockquote>
-<h3 id="request-api">Request API</h3>
-<p>For full control, use the core request method.</p>
+<h3 id="pattern-api">Pattern API</h3>
+<p>For full control, use the core <code>add</code> method.</p>
 <blockquote>
 <div class="autodoc">
-<div class="autodoc-signature"><code>respx.<strong>request</strong></code><span class="autodoc-punctuation">(</span><em class="autodoc-param">method</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">url=None</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">status_code=None</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">content=None</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">content_type=None</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">headers=None</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">pass_through=False</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">alias=None</em><span class="autodoc-punctuation">)</span></div>
+<div class="autodoc-signature"><code>respx.<strong>add</strong></code><span class="autodoc-punctuation">(</span><em class="autodoc-param">method</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">url=None</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">status_code=None</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">content=None</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">content_type=None</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">headers=None</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">pass_through=False</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">alias=None</em><span class="autodoc-punctuation">)</span></div>
 <div class="autodoc-docstring"></div>
 </div>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><strong>method</strong> - <em>str | callable</em><br />
+<li><strong>method</strong> - <em>str | callable | RequestPattern</em><br />
   Request HTTP method, or <a href="#request-callback">Request callback</a>, to match.</li>
 <li><strong>url</strong> - <em>(optional) str | pattern</em><br />
   Request exact URL, or <a href="#url-pattern">URL pattern</a>, to match.</li>
@@ -618,9 +618,9 @@ See <a href="#request-api">Request API</a> for parameters.</p>
 
 
 <span class="nd">@respx</span><span class="o">.</span><span class="n">mock</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://foo.bar&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_something</span><span class="p">():</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_something</span><span class="p">(</span><span class="n">respx_mock</span><span class="p">):</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://foo.bar&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="n">request</span> <span class="o">=</span> <span class="n">respx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/baz/&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="s2">&quot;Baz&quot;</span><span class="p">)</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="n">respx_mock</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/baz/&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="s2">&quot;Baz&quot;</span><span class="p">)</span>
         <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/baz/&quot;</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;Baz&quot;</span>
 </code></pre></div>
@@ -628,7 +628,7 @@ See <a href="#request-api">Request API</a> for parameters.</p>
 
 <h3 id="request-callback">Request callback</h3>
 <p>For full control of what request to <strong>match</strong> and what response to <strong>mock</strong>,
-pass a <em>callback</em> function as the <code>request(method, ...)</code> parameter.
+pass a <em>callback</em> function as the <code>add(method, ...)</code> parameter.
 The callback's response argument will be pre-populated with any additional response parameters.</p>
 <div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">httpx</span>
 <span class="kn">import</span> <span class="nn">respx</span>
@@ -653,7 +653,7 @@ The callback's response argument will be pre-populated with any additional respo
 
 <span class="nd">@respx</span><span class="o">.</span><span class="n">mock</span>
 <span class="k">def</span> <span class="nf">test_something</span><span class="p">():</span>
-    <span class="n">custom_request</span> <span class="o">=</span> <span class="n">respx</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">match_and_mock</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">201</span><span class="p">)</span>
+    <span class="n">custom_request</span> <span class="o">=</span> <span class="n">respx</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">match_and_mock</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">201</span><span class="p">)</span>
     <span class="n">respx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/baz/&quot;</span><span class="p">)</span>
 
     <span class="n">response</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/baz/&quot;</span><span class="p">)</span>
@@ -762,20 +762,20 @@ This is useful when you need to test proper <code>HTTPX</code> error handling in
 </blockquote>
 <p>Configure checks by using the <code>respx.mock</code> decorator / context manager <em>with</em> parentheses.</p>
 <div class="codehilite"><pre><span></span><code><span class="nd">@respx</span><span class="o">.</span><span class="n">mock</span><span class="p">(</span><span class="n">assert_all_called</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_something</span><span class="p">(</span><span class="n">httpx_mock</span><span class="p">):</span>
-    <span class="n">httpx_mock</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://some.url/&quot;</span><span class="p">)</span>  <span class="c1"># OK</span>
-    <span class="n">httpx_mock</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_something</span><span class="p">(</span><span class="n">respx_mock</span><span class="p">):</span>
+    <span class="n">respx_mock</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://some.url/&quot;</span><span class="p">)</span>  <span class="c1"># OK</span>
+    <span class="n">respx_mock</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/&quot;</span><span class="p">)</span>
 
     <span class="n">response</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
-    <span class="k">assert</span> <span class="n">httpx_mock</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">call_count</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="k">assert</span> <span class="n">respx_mock</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">call_count</span> <span class="o">==</span> <span class="mi">1</span>
 </code></pre></div>
 
 
-<div class="codehilite"><pre><span></span><code><span class="k">with</span> <span class="n">respx</span><span class="o">.</span><span class="n">mock</span><span class="p">(</span><span class="n">assert_all_mocked</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">httpx_mock</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="k">with</span> <span class="n">respx</span><span class="o">.</span><span class="n">mock</span><span class="p">(</span><span class="n">assert_all_mocked</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">respx_mock</span><span class="p">:</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://foo.bar/&quot;</span><span class="p">)</span>  <span class="c1"># OK</span>
     <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
-    <span class="k">assert</span> <span class="n">httpx_mock</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">call_count</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="k">assert</span> <span class="n">respx_mock</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">call_count</span> <span class="o">==</span> <span class="mi">1</span>
 </code></pre></div>
 
 
